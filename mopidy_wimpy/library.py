@@ -53,18 +53,21 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		logger.debug('track = %s' % track.name)
 		uri = 'wimpy:track:' + str(track.id)
 		artist = self._to_mopidy_artist(track)
-	
-		track = Track(
-			uri=uri,
-			name=track.name,
-			artists=[artist],
-			album=self._to_mopidy_album(track),
-			track_no=int(track.track_num),
-			disc_no=int(0),
-			date=unicode(2015),
-			length=int(track.duration*1000),
-			bitrate=320)
-		self.tracks[uri] = track
+		try:
+			track = self.tracks[uri]
+			logger.debug(u'Track exists, returning from _to_mopidy_track')
+		except:
+			track = Track(
+				uri=uri,
+				name=track.name,
+				artists=[artist],
+				album=self._to_mopidy_album(track),
+				track_no=int(track.track_num),
+				disc_no=int(0),
+				date=unicode(2015),
+				length=int(track.duration*1000),
+				bitrate=320)
+			self.tracks[uri] = track
 		logger.debug(u'%s tracks loaded' % len(self.tracks))
 		return track
 		
@@ -231,10 +234,10 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 
 	
 	def refresh(self):
-		self.tracks = {}
-		self.albums = {}
-		self.artists = {}
-		self.aa_artists = {}
+		#self.tracks = {}
+		#self.albums = {}
+		#self.artists = {}
+		#self.aa_artists = {}
 		logger.debug(u'library.py Refresh')
 		for track in self.backend.session.get_all_tracks():
 			self._to_mopidy_track(track)
