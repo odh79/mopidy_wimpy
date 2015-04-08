@@ -40,8 +40,8 @@ class WimpyPlaylistsProvider(backend.PlaylistsProvider):
 		#logger.debug(u'Playlists fetched: ')
 		
 			
-		#for playlist in self.backend.session.get_all_playlists():
-		for playlist in playl:
+		for playlist in self.backend.session.get_all_playlists():
+		#for playlist in playl:
 			tracks = []
 			logger.debug(u'PlaylistId=%s' % playlist.id)
 			for track in self.backend.session.get_playlist_tracks(playlist.id):

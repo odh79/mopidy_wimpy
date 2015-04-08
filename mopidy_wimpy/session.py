@@ -42,13 +42,13 @@ class WimpySession(object):
 	def get_all_tracks(self):
 		tracks = []
 		logger.info(u'Not tested yet')
-		'''for playlist in self.api.get_user_playlists(self.api.user.id):
+		for playlist in self.api.get_user_playlists(self.api.user.id):
 			for track in self.api.get_playlist_tracks(playlist.id):
 				tracks.append(track)
 				logger.debug(u'Fetched %s tracks so far' % len(tracks))
-		logger.debug(u'Fetched %s tracks from wimp. And now i am done' % len(tracks))'''
+		logger.debug(u'Fetched %s tracks from wimp. And now i am done' % len(tracks))
 		
-		for track in self.api.get_playlist_tracks('ccba4c72-6aaf-43db-a46f-7f0cc579362d'):
+		'''for track in self.api.get_playlist_tracks('ccba4c72-6aaf-43db-a46f-7f0cc579362d'):
 			tracks.append(track)
 		for track in self.api.get_playlist_tracks('0c84fe6a-4cf1-425a-9598-f09eb377738b'):
 			tracks.append(track)
@@ -57,7 +57,7 @@ class WimpySession(object):
 		for track in self.api.get_playlist_tracks('14cb2e61-bd41-4aab-a03a-33b2d9a65181'):
 			tracks.append(track)
 		for track in self.api.get_playlist_tracks('895a801a-eb62-4466-b811-6043c148fb98'):
-			tracks.append(track)
+			tracks.append(track)'''
 		#return self.api.get_playlist_tracks('ccba4c72-6aaf-43db-a46f-7f0cc579362d')
 		return tracks
 	
