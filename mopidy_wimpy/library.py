@@ -26,27 +26,43 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		#							name='Personal top tracks'),
 		#			Ref.directory(uri='wimp:albums:toplist',
 		#							name='Personal top albums')]
-		self._root = [Ref.directory(uri='wimpy:tracks:favorite',
-									name='Personal favorite tracks'),
+		#self._root = [Ref.directory(uri='wimpy:directory:featured',
+		self._root = [Ref.directory(uri='wimpy:featured:directorys',		
+									name='Featured'),
 					Ref.directory(uri='wimpy:albums:favorite',
 									name='Personal favorite albums')]
 
 		
-	def _browse_top_tracks(self):
-		logger.info('Fetching top tracks from wimp')
+	def _browse_featured_directorys(self):
+		logger.info(u'Fetching top tracks from wimp')
+		ddirectorys = []
+		directorys = self.backend.session.get_featured()
+		for d in directorys:
+			#ttracks.append(to_mopidy_track_ref(self, t))
+			ddirectorys.append(Ref.directory(uri='wimpy:featured:tracks:' + d.id,  name=d.name))
+			logger.debug(u'Got featured %s:%s:%s' % (d.id, d.description, d.name))
+			
+		return ddirectorys
+	
+	def _browse_featured_tracks(self, uri):
+		logger.info(u'Fetching featured tracks from wimp: ' + uri)
+		id = uri.split(':')[3]
 		ttracks = []
-		top_tracks = self.backend.session.get_favorite_tracks()
-		for t in top_tracks:
+		tracks = self.backend.session.get_playlist_tracks(id)
+		for t in tracks:
 			ttracks.append(to_mopidy_track_ref(self, t))
-			#logger.debug(u'Got track %s' % t.name)
+			self._to_mopidy_track(t)
+			#directorys.append(Ref.directory(uri='wimpy:featured:directorys:' + t.name, name=t.name))
+			logger.debug(u'Got track %s' % t.name)
 			
 		return ttracks
 		
+	
 	def _browse_top_albums(self):
-		pass
+		return 
 		
 	def _refresh(self, track):
-		self.to_mopidy_track(track)
+		self._to_mopidy_track(track)
 	
 	def _to_mopidy_track(self, track):
 	#uri = get_track_url(self, track.id)
@@ -130,23 +146,28 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 
 		
 	def browse(self, uri): 	
-		#logger.info('wimp browser')
-		logger.debug('wimp browse: %s', str(uri))
+		#logger.info(u'wimp browser')
+		logger.debug(u'wimp browse: %s', uri.decode('utf8'))
 		
 		
 		if uri == self.root_directory.uri:
 			#logger.debug('wimp self_root')
 			return self._root
 
-		if uri == 'wimpy:tracks:favorite':
-			logger.debug('getting wimp:tracks:favorites. And uri=%s' % uri)
-			return self._browse_top_tracks()
-			
+		if uri == 'wimpy:featured:directorys':
+			logger.debug(u'getting wimp:directory:featured. And uri=%s' % uri)
+			return self._browse_featured_directorys()
+		
+		if uri.startswith('wimpy:featured:tracks:'):
+			logger.debug(u'getting wimp:tracks:featured. And uri=%s' % uri)
+			return self._browse_featured_tracks(uri)
+		
+		
 		if uri == 'wimpy:albums:favorite':
-			logger.debug('getting wimp:albums:favorites')
+			logger.debug(u'getting wimp:albums:favorites')
 			return self._browse_top_albums()
 		else:
-			logger.info('Did not find option to browse')
+			logger.info(u'Did not find option to browse')
 	
 	def search(self, field, value):
 		return self.api.search(field, value)
