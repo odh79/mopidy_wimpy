@@ -30,8 +30,8 @@ class WimpyPlaylistsProvider(backend.PlaylistsProvider):
 		playl.append(self.backend.session.get_playlist('ccba4c72-6aaf-43db-a46f-7f0cc579362d'))
 		playl.append(self.backend.session.get_playlist('0c84fe6a-4cf1-425a-9598-f09eb377738b'))
 		playl.append(self.backend.session.get_playlist('5d5b6916-3201-4293-ac8d-e204852c90f8'))
-		playl.append(self.backend.session.get_playlist('14cb2e61-bd41-4aab-a03a-33b2d9a65181'))
-		playl.append(self.backend.session.get_playlist('895a801a-eb62-4466-b811-6043c148fb98'))
+		#playl.append(self.backend.session.get_playlist('14cb2e61-bd41-4aab-a03a-33b2d9a65181'))
+		#playl.append(self.backend.session.get_playlist('895a801a-eb62-4466-b811-6043c148fb98'))
 		playlists = []
 		
 		tracks = []

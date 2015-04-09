@@ -29,17 +29,17 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		#self._root = [Ref.directory(uri='wimpy:directory:featured',
 		self._root = [Ref.directory(uri='wimpy:featured:directorys',		
 									name='Featured'),
-					Ref.directory(uri='wimpy:albums:favorite',
-									name='Personal favorite albums')]
+					Ref.directory(uri='wimpy:moods',
+									name='Moods')]
 
 		
 	def _browse_featured_directorys(self):
-		logger.info(u'Fetching top tracks from wimp')
+		logger.debug(u'Featured playlists')
 		ddirectorys = []
 		directorys = self.backend.session.get_featured()
 		for d in directorys:
 			#ttracks.append(to_mopidy_track_ref(self, t))
-			ddirectorys.append(Ref.directory(uri='wimpy:featured:tracks:' + d.id,  name=d.name))
+			ddirectorys.append(Ref.directory(uri=u'wimpy:featured:tracks:' + d.id,  name=d.name))
 			logger.debug(u'Got featured %s:%s:%s' % (d.id, d.description, d.name))
 			
 		return ddirectorys
@@ -52,17 +52,49 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		for t in tracks:
 			ttracks.append(to_mopidy_track_ref(self, t))
 			self._to_mopidy_track(t)
+			#ttrack.append(self._to_mopidy_track(t))
 			#directorys.append(Ref.directory(uri='wimpy:featured:directorys:' + t.name, name=t.name))
 			logger.debug(u'Got track %s' % t.name)
 			
 		return ttracks
 		
+	def _browse_moods(self):
+		logger.debug(u'Getting moods')
+		mmoods = []
+		moods = self.backend.session.get_moods()
+		for m in moods:
+			logger.debug(u'mood: %s' % m.name)
+			mmoods.append(Ref.directory(uri=u'wimpy:mood:playlists:' + m.id, name=m.name))
+			
+		
+		return mmoods 
+		
+	def _browse_mood_playlists(self, uri):
+		mood = uri.split(':')[3]
+		logger.debug(u'Getting mood %s tracks' % mood)
+		playlists = []
+		for p in self.backend.session.get_mood_playlists(mood):
+			playlists.append(Ref.directory(uri=u'wimpy:mood:playlist:tracks:' + p.id,  name=p.name))
+			logger.debug(u'Got featured %s:%s' % (p.id, p.name))
+		return playlists
+		
+	def _browse_mood_playlist_tracks(self, uri):
+		logger.info(u'Fetching mood playlist tracks from wimp: ' + uri)
+		id = uri.split(':')[4]
+		ttracks = []
+		tracks = self.backend.session.get_playlist_tracks(id)
+		for t in tracks:
+			ttracks.append(to_mopidy_track_ref(self, t))
+			self._to_mopidy_track(t)
+			logger.debug(u'Got track %s' % t.name)
+			
+		return ttracks
 	
 	def _browse_top_albums(self):
 		return 
 		
-	def _refresh(self, track):
-		self._to_mopidy_track(track)
+	#def _refresh(self, track):
+	#	self._to_mopidy_track(track)
 	
 	def _to_mopidy_track(self, track):
 	#uri = get_track_url(self, track.id)
@@ -147,7 +179,7 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		
 	def browse(self, uri): 	
 		#logger.info(u'wimp browser')
-		logger.debug(u'wimp browse: %s', uri.decode('utf8'))
+		logger.debug(u'wimp browse: %s', uri)
 		
 		
 		if uri == self.root_directory.uri:
@@ -166,6 +198,16 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		if uri == 'wimpy:albums:favorite':
 			logger.debug(u'getting wimp:albums:favorites')
 			return self._browse_top_albums()
+		
+		if uri == 'wimpy:moods':
+			return self._browse_moods()
+		
+		if uri.startswith('wimpy:mood:playlists:'):
+			return self._browse_mood_playlists(uri)
+		
+		if uri.startswith('wimpy:mood:playlist:tracks:'):
+			return self._browse_mood_playlist_tracks(uri)
+						
 		else:
 			logger.info(u'Did not find option to browse')
 	
