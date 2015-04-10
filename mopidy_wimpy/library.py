@@ -6,7 +6,7 @@ import logging
 from mopidy import backend
 from mopidy.models import Album, Artist, Ref, SearchResult, Track
 
-from mopidy_wimpy.translator import to_mopidy_track_ref, to_mopidy_playlists
+from mopidy_wimpy.translator import to_mopidy_track_ref, to_mopidy_playlists, local_to_mopidy_track_ref
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +30,9 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		self._root = [Ref.directory(uri='wimpy:featured:directorys',		
 									name='Featured'),
 					Ref.directory(uri='wimpy:moods',
-									name='Moods')]
-
+									name='Moods'),
+					Ref.directory(uri='wimpy:all',
+									name='All tracks in local list')]
 		
 	def _browse_featured_directorys(self):
 		logger.debug(u'Featured playlists')
@@ -89,7 +90,41 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 			logger.debug(u'Got track %s' % t.name)
 			
 		return ttracks
-	
+
+	def _browse_genres(self):
+		logger.debug(u'Getting genres')
+		genres = []
+		for g in self.backend.session.get_genres():
+			logger.debug(u'genre: %s' % g.name)
+			genres.append(Ref.directory(uri=u'wimpy:genre:tracks:' + g.id, name=g.name))
+			
+		
+		return genres
+		
+	def _browse_genre_tracks(self, uri):
+		logger.info(u'Fetching genre tracks from wimp: ' + uri)
+		id = uri.split(':')[3]
+		ttracks = []
+		tracks = self.backend.session.get_playlist_tracks(id)
+		for t in tracks:
+			ttracks.append(to_mopidy_track_ref(self, t))
+			self._to_mopidy_track(t)
+			#ttrack.append(self._to_mopidy_track(t))
+			#directorys.append(Ref.directory(uri='wimpy:featured:directorys:' + t.name, name=t.name))
+			logger.debug(u'Got track %s' % t.name)
+			
+		return ttracks
+		
+	def _browse_all(self):
+		tracks = []
+		#logger.debug(u'self.tracks[] length %s' % len(self.tracks))
+		for t in self.tracks:
+			tracks.append(local_to_mopidy_track_ref(self, t))
+			logger.debug(u'Track: %s:%s' % (t, self.tracks[t].name))
+		
+		return tracks
+			
+		
 	def _browse_top_albums(self):
 		return 
 		
@@ -207,7 +242,19 @@ class WimpyLibraryProvider(backend.LibraryProvider):
 		
 		if uri.startswith('wimpy:mood:playlist:tracks:'):
 			return self._browse_mood_playlist_tracks(uri)
-						
+			
+		if uri == 'wimpy:genres':
+			logger.debug(u'getting wimp:genres:featured. And uri=%s' % uri)
+			return self._browse_genres()
+		
+		if uri.startswith('wimpy:genre:tracks:'):
+			logger.debug(u'getting wimp:genre:tracks. And uri=%s' % uri)
+			return self._browse_genre_tracks(uri)
+		
+		if uri == 'wimpy:all':
+			logger.debug(u'Getting genre tracks')
+			return self._browse_all()
+			
 		else:
 			logger.info(u'Did not find option to browse')
 	

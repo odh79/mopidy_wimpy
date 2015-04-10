@@ -59,11 +59,13 @@ class WimpySession(object):
 			tracks.append(track)
 		for track in self.api.get_playlist_tracks('5d5b6916-3201-4293-ac8d-e204852c90f8'):
 			tracks.append(track)'''
-		#for track in self.api.get_playlist_tracks('14cb2e61-bd41-4aab-a03a-33b2d9a65181'):
-			#tracks.append(track)
-		#for track in self.api.get_playlist_tracks('895a801a-eb62-4466-b811-6043c148fb98'):
-			#tracks.append(track)
-		#return self.api.get_playlist_tracks('ccba4c72-6aaf-43db-a46f-7f0cc579362d')
+		
+		'''for track in self.api.get_playlist_tracks('14cb2e61-bd41-4aab-a03a-33b2d9a65181'):
+			tracks.append(track)
+		for track in self.api.get_playlist_tracks('895a801a-eb62-4466-b811-6043c148fb98'):
+			tracks.append(track)'
+		return self.api.get_playlist_tracks('ccba4c72-6aaf-43db-a46f-7f0cc579362d')'''
+		
 		return tracks
 	
 	def get_album(self, album_id):
@@ -95,6 +97,10 @@ class WimpySession(object):
 	def get_featured(self):
 		self.check_login
 		return self.api.get_featured()
+	
+	def get_genres(self):
+		self.check_login
+		return self.api.get_genres()
 	
 	def get_featured_items(self, type, group):
 		self.check_login

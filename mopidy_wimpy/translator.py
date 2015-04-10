@@ -26,6 +26,10 @@ def to_mopidy_track_ref(self, track):
 	uri = 'wimpy:track:' + str(track.id)
 	return Ref.track(uri=uri, name=track.name)
 	
+def local_to_mopidy_track_ref(self, uri):
+	
+	return Ref.track(uri=uri, name=self.tracks[uri].name)
+	
 	
 def to_mopidy_track(self, track):
 	#uri = get_track_url(self, track.id)

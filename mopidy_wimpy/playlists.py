@@ -48,10 +48,12 @@ class WimpyPlaylistsProvider(backend.PlaylistsProvider):
 				if self.backend.library.lookup('wimpy:track:' + str(track.id)):
 					
 					track = self.backend.library.lookup('wimpy:track:' + str(track.id))
-					logger.debug(u'result: %s' % track)
+					logger.debug(u'Track exists: %s' % track)
 				else:
+					logger.debug(u'Track does not exist, adding: %s' % track.name)
 					self.backend.library._to_mopidy_track(track)
 					tracks += self.backend.library.lookup('wimpy:track:' + str(track.id))
+					
 				
 			logger.debug(u'tracks=%s' % tracks)
 			playlist = Playlist(uri='wimpy:playlist:' + playlist.id, name=playlist.name, tracks=tracks)
