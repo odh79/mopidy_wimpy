@@ -47,7 +47,7 @@ class WimpyPlaylistsProvider(backend.PlaylistsProvider):
 			for track in self.backend.session.get_playlist_tracks(playlist.id):
 				if self.backend.library.lookup('wimpy:track:' + str(track.id)):
 					
-					track = self.backend.library.lookup('wimpy:track:' + str(track.id))
+					tracks += self.backend.library.lookup('wimpy:track:' + str(track.id))
 					logger.debug(u'Track exists: %s' % track)
 				else:
 					logger.debug(u'Track does not exist, adding: %s' % track.name)
