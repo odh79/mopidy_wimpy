@@ -24,9 +24,8 @@ Mopidy extension for Wimp
 Installation
 ============
 
-Install by running::
+Install by running installaionscript in Install
 
-    pip install Mopidy-Wimpy
 
 Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
 <http://apt.mopidy.com/>`_.
